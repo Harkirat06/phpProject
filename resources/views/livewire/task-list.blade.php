@@ -1,4 +1,7 @@
 <div>
+    <button class="bg-blue-500 hover:bg-blue-700 font-bold py-2 px-4 rounded">
+        Nueva Tarea
+    </button>
     <div class="container mx-auto mt-6">
         <h2 class="text-2xl font-semibold mb-4">Tus tareas {{$user->name}}</h2>
         @if ($tasks->isEmpty())
