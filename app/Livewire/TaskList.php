@@ -11,10 +11,21 @@ class TaskList extends Component
     public $user;
     public $tasks;
 
+    public $title;
+    public $description;
+
     public function mount()
     {
         $this->user = Auth::user();
         $this->tasks = $this->user->tasks;
+    }
+
+    public function saveTask(){
+        $task = new Task();
+        $task->title = $this->title;
+        $task->description = $this->description;
+        $task->user_id = $this->user->id;
+        $task->save();
     }
     
     public function render()
