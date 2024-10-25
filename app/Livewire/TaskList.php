@@ -3,8 +3,11 @@
 namespace App\Livewire;
 
 use App\Models\Task;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
+
 
 class TaskList extends Component
 {
@@ -26,6 +29,10 @@ class TaskList extends Component
         $task->description = $this->description;
         $task->user_id = $this->user->id;
         $task->save();
+    }
+
+    public function removeTask(Task $task){  
+        DB::table('tasks')->where('id', '=', $task->id)->delete();
     }
     
     public function render()

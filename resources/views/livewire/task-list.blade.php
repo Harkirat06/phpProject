@@ -38,6 +38,7 @@
                         <h3 class="text-lg font-bold mb-2">{{ $task->title }}</h3>
                         <p class="text-white mb-4">{{ $task->description }}</p>
                         <p class="text-sm text-gray-400">Fecha de creación: {{ $task->created_at->format('d/m/Y') }}</p>
+                        <button wire:click="removeTask({{ $task }})" type="button" class="btn btn-danger">Eliminar Tarea</button>
                     </div>
                 @endforeach
             </div>
