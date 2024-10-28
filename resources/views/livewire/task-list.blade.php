@@ -1,5 +1,5 @@
 <div>
-    <button x-data x-on:click="$dispatch('open-modal'); @this.openModalWindow()" type="button" class="btn btn-primary">Nueva Tarea</button>
+    <button x-data wire:click="newTaskModal" type="button" class="btn btn-primary">Nueva Tarea</button>
     <div class="container mx-auto mt-6">
         <h2 class="text-2xl font-semibold mb-4">Tus tareas {{$user->name}}</h2>
         @if ($tasks->isEmpty())
@@ -11,7 +11,17 @@
                         <h3 class="text-lg font-bold mb-2">{{ $task->title }}</h3>
                         <p class="text-white mb-4">{{ $task->description }}</p>
                         <p class="text-sm text-gray-400">Fecha de creación: {{ $task->created_at->format('d/m/Y') }}</p>
-                        <button wire:click="removeTask({{ $task->id }})" type="button" class="btn btn-danger">Eliminar Tarea</button>
+                        
+                        <div class="flex space-x-2 mt-4">
+                            <!-- Botón para Editar -->
+                            <button wire:click="editTaskModal({{ $task }})" class="px-4 py-2 bg-yellow-500 text-white rounded">Editar</button>
+                            
+                            <!-- Botón para Compartir -->
+                            <button wire:click="shareTask({{ $task }})" class="px-4 py-2 bg-blue-500 text-white rounded">Compartir</button>
+                            
+                            <!-- Botón para Eliminar -->
+                            <button wire:click="removeTask({{ $task }})" class="px-4 py-2 bg-red-600 text-white rounded">Eliminar</button>
+                        </div>
                     </div>
                 @endforeach
             </div>
@@ -41,7 +51,10 @@
                 </div>
                 <div class="flex justify-end space-x-2">
                     <button @click="modal = false" wire:click="resetForm" class="px-4 py-2 bg-gray-300 rounded">Cancelar</button>
-                    <button wire:click="saveTask" @click="modal = false" class="px-4 py-2 bg-blue-600 text-white rounded">Guardar Tarea</button>
+        
+                    <button wire:click="saveTask" @click="modal = false" class="px-4 py-2 bg-blue-600 text-white rounded">
+                    {{ $button ? 'Modificar' : 'Guardar'  }}
+                    </button>
                 </div>
             </div>
         </div>

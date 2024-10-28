@@ -12,6 +12,8 @@ class TaskList extends Component
 {
     public $user;
     public $tasks;
+    public $task;
+    public $button = false;
 
     public $title;
     public $description;
@@ -30,27 +32,26 @@ class TaskList extends Component
     {
         $this->title = '';
         $this->description = '';
+        $this->button = false;
     }
 
-    public function openModalWindow()
+    public function newTaskModal()
     {
         $this->resetForm();
+        $this->task = new Task();
+        $this->dispatch('open-modal');
     }
     
     public function saveTask()
     {
-        // Validamos los campos si es necesario
-        $this->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
+        Task::updateOrCreate([
+            'id' => $this->task->id,
+        ],[
+            'title' => $this->title,
+            'description' => $this->description,
+            'user_id' => $this->user->id,
         ]);
-    
-        $task = new Task();
-        $task->title = $this->title;
-        $task->description = $this->description;
-        $task->user_id = $this->user->id;
-        $task->save();
-    
+
         // Cargamos las tareas actualizadas y limpiamos el formulario
         $this->loadTasks();
         $this->resetForm();
@@ -59,6 +60,14 @@ class TaskList extends Component
     public function removeTask(Task $task){  
         DB::table('tasks')->where('id', '=', $task->id)->delete();
         $this->loadTasks();
+    }
+
+    public function editTaskModal(Task $task){
+        $this->title = $task->title;
+        $this->description = $task->description;
+        $this->task = $task;
+        $this->button = true;
+        $this->dispatch('open-modal');
     }
     
     public function render()
