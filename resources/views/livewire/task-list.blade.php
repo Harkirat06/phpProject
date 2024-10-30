@@ -1,6 +1,6 @@
 <div>
     <button x-data wire:click="newTaskModal" type="button" class="btn btn-primary">Nueva Tarea</button>
-    <div class="container mx-auto mt-6">
+    <div wire:poll.200ms="loadTasks" class="container mx-auto mt-6">
         <h2 class="text-2xl font-semibold mb-4">Tus tareas {{$user->name}}</h2>
         @if ($tasks->isEmpty())
             <p class="text-gray-400">No tienes tareas pendientes.</p>
@@ -14,13 +14,18 @@
                         
                         <div class="flex space-x-2 mt-4">
                             <!-- Botón para Editar -->
-                            <button wire:click="editTaskModal({{ $task }})" class="px-4 py-2 bg-yellow-500 text-white rounded">Editar</button>
-                            
+                            <button wire:click="editTaskModal({{ $task }})" class="px-3 py-2 bg-yellow-500 text-white rounded">Editar</button>
+                            @if($task->sharedWith()->get()->isEmpty())
                             <!-- Botón para Compartir -->
-                            <button wire:click="shareTask({{ $task }})" class="px-4 py-2 bg-blue-500 text-white rounded">Compartir</button>
+                            <button wire:click="shareTask({{ $task }})" class="px-3 py-2 bg-blue-500 text-white rounded">Compartir</button>
                             
+                            @else
+
+                            <button wire:click="unShareTask({{ $task }})" class="px-3 py-2 bg-blue-500 text-white rounded">Descompartir</button>
+
+                            @endif
                             <!-- Botón para Eliminar -->
-                            <button wire:click="removeTask({{ $task }})" class="px-4 py-2 bg-red-600 text-white rounded">Eliminar</button>
+                            <button wire:click="removeTask({{ $task }})" class="px-3 py-2 bg-red-600 text-white rounded">Eliminar</button>
                         </div>
                     </div>
                 @endforeach

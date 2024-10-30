@@ -3,8 +3,8 @@
 namespace App\Livewire;
 
 use App\Models\Task;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 
@@ -14,6 +14,7 @@ class TaskList extends Component
     public $tasks;
     public $task;
     public $button = false;
+    public $sharing = false;
 
     public $title;
     public $description;
@@ -25,7 +26,9 @@ class TaskList extends Component
     }
 
     public function loadTasks(){
-        $this->tasks = $this->user->tasks;
+        $normalTasks = $this->user->tasks;
+        $sharedTasks = $this->user->sharedTasks;
+        $this->tasks = $normalTasks->concat($sharedTasks);
     }
 
     public function resetForm()
@@ -58,7 +61,7 @@ class TaskList extends Component
     }
 
     public function removeTask(Task $task){  
-        DB::table('tasks')->where('id', '=', $task->id)->delete();
+        $task->delete();
         $this->loadTasks();
     }
 
@@ -68,6 +71,16 @@ class TaskList extends Component
         $this->task = $task;
         $this->button = true;
         $this->dispatch('open-modal');
+    }
+
+    public function shareTask(Task $task){
+        $task->sharedWith()->attach(1, ['permissions' => 'view']);
+        $this->loadTasks();
+    }
+
+    public function unShareTask(Task $task){
+        $task->sharedWith()->detach(1);
+        $this->loadTasks();
     }
     
     public function render()
