@@ -14,18 +14,19 @@
                         
                         <div class="flex space-x-2 mt-4">
                             <!-- Botón para Editar -->
-                            <button wire:click="editTaskModal({{ $task }})" class="px-3 py-2 bg-yellow-500 text-white rounded">Editar</button>
+                            <button wire:click="editTaskModal({{ $task }})" class="px-2 py-2 bg-yellow-500 text-white rounded">Editar</button>
                             @if($task->sharedWith()->get()->isEmpty())
+                            
                             <!-- Botón para Compartir -->
-                            <button wire:click="openShareTaskModal({{ $task }})" class="px-3 py-2 bg-blue-500 text-white rounded">Compartir</button>
+                            <button wire:click="openShareTaskModal({{ $task }})" class="px-2 py-2 bg-blue-500 text-white rounded">Compartir</button>
                             
                             @else
 
-                            <button wire:click="unShareTask({{ $task }})" class="px-3 py-2 bg-blue-500 text-white rounded">Descompartir</button>
+                            <button wire:click="unShareTask({{ $task }})" class="px-2 py-2 bg-blue-500 text-white rounded">Descompartir</button>
 
                             @endif
                             <!-- Botón para Eliminar -->
-                            <button wire:click="removeTask({{ $task }})" class="px-3 py-2 bg-red-600 text-white rounded">Eliminar</button>
+                            <button wire:click="removeTask({{ $task }})" class="px-2 py-2 bg-red-600 text-white rounded">Eliminar</button>
                         </div>
                     </div>
                 @endforeach

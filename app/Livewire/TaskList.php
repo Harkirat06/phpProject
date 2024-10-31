@@ -55,14 +55,22 @@ class TaskList extends Component
     
     public function saveTask()
     {
-        Task::updateOrCreate([
-            'id' => $this->task->id,
-        ],[
-            'title' => $this->title,
-            'description' => $this->description,
-            'user_id' => $this->user->id,
-        ]);
-
+        if(!$this->task->sharedWith()->get()->isEmpty()){
+            Task::updateOrCreate([
+                'id' => $this->task->id,
+            ],[
+                'title' => $this->title,
+                'description' => $this->description,
+            ]);
+        }else{
+            Task::updateOrCreate([
+                'id' => $this->task->id,
+            ],[
+                'title' => $this->title,
+                'description' => $this->description,
+                'user_id' => $this->user->id,
+            ]);
+        }
         // Cargamos las tareas actualizadas y limpiamos el formulario
         $this->loadTasks();
         $this->resetForm();
@@ -105,7 +113,8 @@ class TaskList extends Component
     }
 
     public function unShareTask(Task $task){
-        $task->sharedWith()->detach(1);
+        $id = $task->sharedWith()->get()->first()->id;
+        $task->sharedWith()->detach($id);
         $this->loadTasks();
     }
     
