@@ -16,19 +16,27 @@ class TaskList extends Component
     public $button = false;
     public $sharing = false;
 
+    public $selectedUser;
+    public $selectedPermission = 'view';
+
     public $title;
     public $description;
+    public $users;
 
     public function mount()
     {
         $this->user = Auth::user();
         $this->loadTasks();
+        $this->users = $this->getUsersToShare();
     }
 
     public function loadTasks(){
         $normalTasks = $this->user->tasks;
         $sharedTasks = $this->user->sharedTasks;
         $this->tasks = $normalTasks->concat($sharedTasks);
+    }
+    public function getUsersToShare(){
+        return User::all()->where('id', '!=', $this->user->id);
     }
 
     public function resetForm()
@@ -73,9 +81,27 @@ class TaskList extends Component
         $this->dispatch('open-modal');
     }
 
-    public function shareTask(Task $task){
-        $task->sharedWith()->attach(1, ['permissions' => 'view']);
-        $this->loadTasks();
+    public function openShareTaskModal(Task $task){
+        $this->task = $task;
+        $this->dispatch('open-share');
+    }
+
+    public function shareTask()
+    {
+        if ($this->selectedUser && $this->selectedPermission) {
+            $user = User::find($this->selectedUser);
+            if ($user) {
+                $this->task->sharedWith()->attach($user->id, ['permissions' => $this->selectedPermission]);
+                $this->loadTasks();
+                $this->resetShareForm();
+            }
+        }
+    }
+    
+    public function resetShareForm()
+    {
+        $this->selectedUser = null;
+        $this->selectedPermission = 'view';
     }
 
     public function unShareTask(Task $task){
