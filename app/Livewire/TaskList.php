@@ -115,7 +115,6 @@ class TaskList extends Component
     public function unShareTask(Task $task){
         $id = $task->sharedWith()->get()->first()->id;
         $task->sharedWith()->detach($id);
-        $this->loadTasks();
     }
     
     public function render()
