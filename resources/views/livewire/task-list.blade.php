@@ -1,6 +1,6 @@
 <div>
     <button x-data wire:click="newTaskModal" type="button" class="btn btn-primary">Nueva Tarea</button>
-    <div wire:poll.200ms="loadTasks" class="container mx-auto mt-6">
+    <div wire:poll.2000ms="loadTasks" class="container mx-auto mt-6">
         <h2 class="text-2xl font-semibold mb-4">Tus tareas {{$user->name}}</h2>
         @if ($tasks->isEmpty())
             <p class="text-gray-400">No tienes tareas pendientes.</p>
