@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\SharedWith;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -16,7 +17,8 @@ class TaskList extends Component
     public $button = false;
     public $sharing = false;
 
-    public $selectedUser;
+    public $shareWith = [];
+    public $selectedUserId;
     public $selectedPermission = 'view';
 
     public $title;
@@ -94,27 +96,49 @@ class TaskList extends Component
         $this->dispatch('open-share');
     }
 
-    public function shareTask()
+    public function addShareWithUser()
     {
-        if ($this->selectedUser && $this->selectedPermission) {
-            $user = User::find($this->selectedUser);
-            if ($user) {
-                $this->task->sharedWith()->attach($user->id, ['permissions' => $this->selectedPermission]);
-                $this->loadTasks();
-                $this->resetShareForm();
+        foreach ($this->shareWith as $existingShare) {
+            if ($existingShare['userId'] == $this->selectedUserId) {
+                return;
             }
         }
+    
+        $this->shareWith[] = [
+            'userId' => $this->selectedUserId,
+            'permissions' => $this->selectedPermission,
+        ];
     }
+
+    public function shareTask(){
+        foreach ($this->shareWith as $shareWithElement) {
+            $user = User::find($shareWithElement['userId']);
+            if ($user) {
+                $this->task->sharedWith()->attach($user->id, ['permissions' => $shareWithElement['permissions']]);
+            }
+        }
+
+        $this->loadTasks();
+        $this->resetShareForm();
+    }
+
     
     public function resetShareForm()
     {
-        $this->selectedUser = null;
-        $this->selectedPermission = 'view';
+        $this->shareWith = [];
     }
 
     public function unShareTask(Task $task){
-        $id = $task->sharedWith()->get()->first()->id;
-        $task->sharedWith()->detach($id);
+        $sharedWithIds = $task->sharedWith()->get()->map(function(User $user){
+                            return $user->id;
+                        }
+        );
+
+        if($sharedWithIds->contains($this->user->id)){
+            $task->sharedWith()->detach($this->user->id);
+        }else{
+            $task->sharedWith()->detach($sharedWithIds);
+        } 
     }
     
     public function render()
